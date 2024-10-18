@@ -1,0 +1,23 @@
+/venv
+.venv
+/Scripts
+/Lib
+.env
+*.cfg
+/migration
+/migrations
+/__pycache__
+# Byte-compiled / optimized / DLL files
+__pycache__/
+migrations/
+*.py[cod]
+*$py.class
+
+# Django related files
+*.log
+*.pot
+*.pyc
+db.sqlite3
+
+# Ignore the virtual environment directory
+venv/
