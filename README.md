@@ -1,4 +1,5 @@
 # cmpe273-book-reader-django
+```
 smartcity-backend/
 ├── authentication/ (Google OAuth2 combine with Django's own authentication)
 │   ├── __init__.py
@@ -29,7 +30,7 @@ smartcity-backend/
 ├── manage.py
 ├── README.md
 ├── requirements.txt
-
+```
 
 ## To run our Django backend locally:
 ### 1. Create a python virtual environment and activate it:
