@@ -29,8 +29,32 @@ smartcity-backend/
 ├── manage.py
 ├── README.md
 ├── requirements.txt
-## Google Books API
-### 
+
+
+## To run our Django backend locally:
+### 1. Create a python virtual environment and activate it:
+#### Windows:
+```bash 
+python -m venv venv
+```
+```bash
+venv\Scripts\activate
+```
+#### Mac:
+```bash
+python3 -m venv venv
+```
+```bash
+source venv/bin/activate
+```
+### 2. Download .env file from the link: 
+https://drive.google.com/file/d/1Zq3CLyC3t8XmZef8mMqHE_euytEeyMye/view?usp=sharing
+### 3. install all packages with:
+```bash
+pip install -r requirements.txt
+```
+### 4. Install mysql and mysql-connector-c.
+
 
 ## All our test API routes (for localhost just add http://127.0.0.1:8000/ in front)
 ### To retrive book title search results:
