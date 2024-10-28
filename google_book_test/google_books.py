@@ -17,7 +17,7 @@ def google_filter_results(gutendex_books):
             continue  # Skip if title or authors are missing
         
         # Create search query for Google Books API with title and author
-        google_books_query = f"{title} " + " ".join(author)
+        google_books_query = f"{title} {author}"
         google_books_url = f"{GOOGLE_BOOKS_API_URL}?q={google_books_query}"
         
         try:
@@ -42,7 +42,7 @@ def google_filter_genre_results(gutendex_books):
     for book in gutendex_books:
         title = book.get("title")
         author = book.get("author")
-        google_books_query = f"{title} " + " ".join(author)
+        google_books_query = f"{title}" + " ".join(author)
         google_books_url = f"{GOOGLE_BOOKS_API_URL}?q={google_books_query}"
         
         try:

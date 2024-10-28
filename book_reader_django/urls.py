@@ -20,6 +20,10 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
+    path('main/', include('main_search_single.urls')),
+    path('listhistory/', include('list_history.urls')),
+    path('reading/', include('reading_page.urls')),
+
     # This will route all the OAuth-related URLs to the social_django views, including the complete/google/ endpoint for handling OAuth responses.
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api/', include('google_book_test.urls')),

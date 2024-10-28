@@ -80,6 +80,10 @@ INSTALLED_APPS = [
     'social_django',
     'corsheaders',
     'authentication',
+    'google_book_test',
+    'list_history',
+    'main_search_single',
+    'reading_page'
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -153,8 +157,6 @@ DATABASES = {
         'PORT': os.getenv('AWS_RDS_PORT'),  # The default MySQL port is 3306
     }
 }
-
-AUTH_USER_MODEL = 'authentication.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

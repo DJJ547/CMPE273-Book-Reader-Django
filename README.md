@@ -1,7 +1,7 @@
 # cmpe273-book-reader-django
 ```
 smartcity-backend/
-├── authentication/ (Google OAuth2 combine with Django's own authentication)
+├── authentication/ (Google OAuth2 and our own authentication system)
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
@@ -24,7 +24,34 @@ smartcity-backend/
 │   ├── mysql.py
 │   ├── tests.py
 │   ├── urls.py
-│   ├── views.py  (all test APIs will be in this views.py)
+│   ├── views.py  (all google_book_test APIs will be in this views.py)
+├── list_history/  (Reading list page and reading history page)
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── mysql.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py  (all list_history APIs will be in this views.py)
+├── main_search_single/  (Main page, search page and single book information page)
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── mysql.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py  (all main_search_single APIs will be in this views.py)
+├── reading_page/  (book content reading page)
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── mysql.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py  (all reading_page APIs will be in this views.py)
 ├── static/
 ├── gitignore
 ├── manage.py
@@ -48,25 +75,12 @@ python3 -m venv venv
 ```bash
 source venv/bin/activate
 ```
-- Download .env file from the link, remember to rename this to ".env": 
+- Download .env file from the link and replace any id or secret with your own, remember to rename this to ".env": 
 https://drive.google.com/file/d/1Zq3CLyC3t8XmZef8mMqHE_euytEeyMye/view?usp=sharing
 - Install all packages with:
 ```bash
 pip install -r requirements.txt
 ```
-- Install mysql and mysql-connector-c.
+- In order to use the Django migration (optional) on our AWS RDS MySQL DB (let Django create database tables for you according to your models.py), you will need to install mysql and mysql-connector-c. - Here's an introduction of Django migration: https://www.youtube.com/watch?v=aOLrEkpGWDg
 
 
-## All our test API routes (for localhost just add http://127.0.0.1:8000/ in front)
-### To retrive book title search results:
-#### api/get-books/ 
-### To retrive book title search results with pagination: 
-#### api/get-books-paginated/
-### To retrive book from specific genre: 
-#### api/get-specific-books/
-### To retrive user book ratings:
-#### api/get-book-reviews/
-### To retrive user book reading lists:
-#### api/google-books/
-### To use Google OAuth2's authorizaion code to exchange for access token from Google:
-#### api/exchange-code/
