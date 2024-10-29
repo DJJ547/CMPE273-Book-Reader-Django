@@ -1,0 +1,16 @@
+{
+    "dev": {
+        "django_settings": "book_reader_django.settings",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "profile_name": null,
+        "project_name": "cmpe273-book-re",
+        "runtime": "python3.12",
+        "s3_bucket": "zappa-dev"
+    }
+}
