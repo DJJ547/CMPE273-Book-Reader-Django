@@ -1,6 +1,15 @@
 # cmpe273-book-reader-django
 ```
 smartcity-backend/
+├── ai_lambda/ (All AI related APIs or lambda)
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── mysql.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py  (all AI/lambda APIs)
 ├── authentication/ (Google OAuth2 and our own authentication system)
 │   ├── __init__.py
 │   ├── admin.py
