@@ -8,38 +8,54 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import status
 import json
 
-from .google_books import google_filter_results, google_fetch_book_reviews, google_filter_genre_results
+from .google_books import google_fetch_book_reviews, google_filter_genre_results
 # from .open_library import open_library_check_content_by_isbn, open_library_fetch_book_content
 from .gutendex import gutendex_fetch_books, gutendex_fetch_book_content, gutendex_fetch_specific_books
 
 @api_view(['GET'])
 def search_books(request):
-    query = request.GET.get('q', '')
-    page = request.GET.get('page', '')
-    page_size = request.GET.get('page_size', '')
+    query = request.GET.get('q', '').strip()
+    page = request.GET.get('page', '1')
+    page_size = request.GET.get('page_size', '10')
     if not query:
-        return Response({'books': []})
+        return Response({'books': []}, status=status.HTTP_200_OK)
+    try:
+        page = int(page)
+        page_size = int(page_size)
+    except ValueError:
+        return Response(
+            {'error': 'Invalid page or page_size parameters.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    page_size = min(page_size, 20)
     gutendex_books_results = gutendex_fetch_books(query, page, page_size)
-    print(gutendex_books_results)
     if not gutendex_books_results:
-        return Response({'books': []})
-    filtered_results = google_filter_results(gutendex_books_results)
-    return Response({'books': filtered_results})
+        return Response(
+            {'books': [], 'message': 'No books found for the given query.'},
+            status=status.HTTP_200_OK
+        )
+    return Response({'books': gutendex_books_results}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def fetch_book_content(request):
-    gutenberg_id = request.GET.get('id', '')
-    # Fetch the book content and filename
+    gutenberg_id = request.GET.get('id', '').strip()
+    if not gutenberg_id:
+        return Response(
+            {"detail": "Missing 'id' parameter in request."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     result = gutendex_fetch_book_content(gutenberg_id)
     if not result:
-        return Response({"detail": "Full text content not available for this book."}, status=status.HTTP_404_NOT_FOUND)
-    
-    book_content, filename = result  # Safe to unpack now
+        return Response(
+            {"detail": "Full text content not available for this book."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    book_content, filename = result
     headers = {
         'Content-Disposition': f'attachment; filename="{filename}"'
     }
     return Response(
-        book_content,
+        data=book_content,
         headers=headers,
         content_type='text/plain',
         status=status.HTTP_200_OK
