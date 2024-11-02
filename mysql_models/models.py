@@ -27,17 +27,33 @@ class BookChapter(models.Model):
 
 class BookGenre(models.Model):
     GENRE_CHOICES = [
-        'Thriller', 'Post-apocalyptic', 'Fantasy', 'Comedy', 'Sci-Fi', 'Romance',  'Action', 'Historical', 'Josei', 'Xuanhuan', 'Mystery',  'Crime', 'Martial Arts', 'Adventure'
+        ('thriller', 'Thriller'),
+        ('post_apocalyptic', 'Post-apocalyptic'),
+        ('fantasy', 'Fantasy'),
+        ('comedy', 'Comedy'),
+        ('sci_fi', 'Sci-Fi'),
+        ('romance', 'Romance'),
+        ('action', 'Action'),
+        ('historical', 'Historical'),
+        ('josei', 'Josei'),
+        ('xuanhuan', 'Xuanhuan'),
+        ('mystery', 'Mystery'),
+        ('crime', 'Crime'),
+        ('martial_arts', 'Martial Arts'),
+        ('adventure', 'Adventure')
     ]
 
     # book_id as a foreign key
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    genre = models.CharField(
-        max_length=20, choices=GENRE_CHOICES, null=False)
-    
+
+    genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
+
     class Meta:
         db_table = 'book_genres'
-        
+
+    def __str__(self):
+        return self.get_genre_display()  # Returns the human-readable name of the genre
+
 
 # class BookProgress(models.Model):
 #     PROGRESS_CHOICES = [
