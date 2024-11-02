@@ -1,6 +1,6 @@
 # views.py
 from .serializers import BookSerializer
-from .models import Book
+from mysql_models.models import Book
 from rest_framework import generics
 from django.db import connection
 from rest_framework.response import Response

@@ -31,7 +31,8 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Redirect URI for handling Google OAuth completion
-SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = os.getenv(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
 
 # If using React or another frontend on localhost
 CORS_ALLOWED_ORIGINS = [
@@ -85,7 +86,8 @@ INSTALLED_APPS = [
     'google_book_test',
     'list_history',
     'main_search_single',
-    'reading_page'
+    'reading_page',
+    "mysql_models"
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -154,10 +156,14 @@ WSGI_APPLICATION = 'book_reader_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('AWS_RDS_NAME'),  # Replace with your RDS database name
-        'USER': os.getenv('AWS_RDS_USERNAME'),  # Replace with your RDS database username
-        'PASSWORD': os.getenv('AWS_RDS_PASSWORD'),  # Replace with your RDS database password
-        'HOST': os.getenv('AWS_RDS_HOSTNAME'),  # Replace with your RDS endpoint, e.g., yourdbinstance.xxxxxxx.us-west-1.rds.amazonaws.com
+        # Replace with your RDS database name
+        'NAME': os.getenv('AWS_RDS_NAME'),
+        # Replace with your RDS database username
+        'USER': os.getenv('AWS_RDS_USERNAME'),
+        # Replace with your RDS database password
+        'PASSWORD': os.getenv('AWS_RDS_PASSWORD'),
+        # Replace with your RDS endpoint, e.g., yourdbinstance.xxxxxxx.us-west-1.rds.amazonaws.com
+        'HOST': os.getenv('AWS_RDS_HOSTNAME'),
         'PORT': os.getenv('AWS_RDS_PORT'),  # The default MySQL port is 3306
     }
 }
@@ -202,7 +208,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 
 # AWS S3 settings

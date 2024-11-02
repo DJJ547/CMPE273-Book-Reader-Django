@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import Book
+from mysql_models.models import Book
 
 
 class BookSerializer(serializers.ModelSerializer):
