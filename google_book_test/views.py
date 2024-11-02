@@ -111,4 +111,3 @@ def get_google_books_reading_list(request):
     books_data = books_response.json()
 
     return Response(books_data)
-

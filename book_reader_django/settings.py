@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from pymongo import MongoClient
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -147,6 +148,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'book_reader_django.wsgi.application'
+
+# AWS RDS MySQL DB and Amazon Document DB settings
 
 DATABASES = {
     'default': {
