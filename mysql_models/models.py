@@ -43,13 +43,13 @@ class BookGenre(models.Model):
         ('adventure', 'Adventure')
     ]
 
-    # book_id as a foreign key
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-
+     # Set book as a foreign key and primary key
+    book = models.OneToOneField(Book, on_delete=models.CASCADE, primary_key=True)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
-        db_table = 'book_genres'
+        unique_together = ('book_id', 'genre')  # Ensure each combination is unique
+        db_table = 'book_genres' 
 
     def __str__(self):
         return self.get_genre_display()  # Returns the human-readable name of the genre
