@@ -44,9 +44,8 @@ class BookGenre(models.Model):
         ('adventure', 'Adventure')
     ]
 
-    # book_id as a foreign key
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
-
+     # Set book as a foreign key and primary key
+    book = models.OneToOneField(Book, on_delete=models.CASCADE, primary_key=True)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
