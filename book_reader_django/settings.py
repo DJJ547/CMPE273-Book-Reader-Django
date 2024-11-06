@@ -165,6 +165,12 @@ DATABASES = {
         # Replace with your RDS endpoint, e.g., yourdbinstance.xxxxxxx.us-west-1.rds.amazonaws.com
         'HOST': os.getenv('AWS_RDS_HOSTNAME'),
         'PORT': os.getenv('AWS_RDS_PORT'),  # The default MySQL port is 3306
+        'OPTIONS': {
+            # SQL mode that helps enforce stricter data integrity by ensuring that invalid or incompatible values throw errors.
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
+        # sets mysql connection open for 10 minute, allows Django to reuse database connections
+        'CONN_MAX_AGE': 600,
     }
 }
 

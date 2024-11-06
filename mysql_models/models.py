@@ -17,11 +17,12 @@ class Book(models.Model):
 
 class BookChapter(models.Model):
     # book_id as a foreign key
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
     chapter_number = models.IntegerField(null=False)
     chapter_title = models.CharField(max_length=100, null=True)
 
     class Meta:
+        unique_together = ('book_id', 'chapter_number')
         db_table = 'book_chapters'
 
 
@@ -44,15 +45,56 @@ class BookGenre(models.Model):
     ]
 
     # book_id as a foreign key
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
 
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
+        unique_together = ('book_id', 'genre')  # Ensure each combination is unique
         db_table = 'book_genres'
 
     def __str__(self):
         return self.get_genre_display()  # Returns the human-readable name of the genre
+
+
+class ReadingLists(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.IntegerField()
+    name = models.CharField(max_length=45, null=True)
+    description = models.CharField(max_length=500, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    flag_color = models.CharField(max_length=45, null=True)
+
+    class Meta:
+        db_table = 'reading_list'  # Replace with your actual table name
+
+    def __str__(self):
+        return self.name
+
+
+class ReadingListBook(models.Model):
+    UNREAD = 'unread'
+    READING = 'reading'
+    COMPLETED = 'completed'
+
+    STATUS_CHOICES = [
+        (UNREAD, 'unread'),
+        (READING, 'reading'),
+        (COMPLETED, 'completed'),
+    ]
+
+    reading_list_id = models.AutoField(primary_key=True)
+    book_id = models.IntegerField()
+    added_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=UNREAD)
+
+    class Meta:
+        unique_together = ('reading_list_id', 'book_id')
+        db_table = 'reading_list_books'
+
+    def __str__(self):
+        return f"Book ID {self.book_id} - Status: {self.status}"
 
 
 # class BookProgress(models.Model):
