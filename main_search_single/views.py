@@ -1,5 +1,5 @@
 from .serializers import BookSerializer,BookGenreSerializer
-from mysql_models.models import Book,BookGenre
+from mysql_models.models import Book,BookGenre,BookReview,BookChapter,User
 from rest_framework import generics,viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -65,6 +65,40 @@ class CombinedBookGenreListView(APIView):
         genres = BookGenre.objects.all()
         genres_data = BookGenreSerializer(genres, many=True).data
 
+
+        # Retrieve all users and create a dictionary of user_id to username
+        users = User.objects.all().values('id', 'username')
+        user_dict = {user['id']: user['username'] for user in users}
+
+        # Retrieve all reviews and organize them by book id
+        reviews = BookReview.objects.all()
+        reviews_dict = {}
+        for review in reviews:
+            book_id = review.book_id
+            if book_id not in reviews_dict:
+                reviews_dict[book_id] = []
+
+            # Use the user_id directly to get the username from user_dict
+            username = user_dict.get(review.user_id, "unknown")  # No need to access .id here
+            
+            reviews_dict[book_id].append({
+                "review": review.review,
+                "rating": review.rating,
+                "username": username
+            })
+
+        # Retrieve all chapters and organize them by book id
+        chapters = BookChapter.objects.all().values('book_id', 'chapter_number', 'chapter_title')
+        chapters_dict = {}
+        for chapter in chapters:
+            book_id = chapter['book_id']
+            if book_id not in chapters_dict:
+                chapters_dict[book_id] = []
+            chapters_dict[book_id].append({
+                "chapter_number": chapter['chapter_number'],
+                "chapter_title": chapter['chapter_title']
+            })
+
         # Create a dictionary to associate genres with their respective books
         genre_dict = {}
         for genre in genres_data:
@@ -73,11 +107,13 @@ class CombinedBookGenreListView(APIView):
                 genre_dict[book_id] = []
             genre_dict[book_id].append(genre['genre'])
 
-        # Combine book data with genres
+        # Combine book data with genres, reviews, and chapters
         combined_data = []
         for book in books_data:
             book_id = book['id']
             book_genres = genre_dict.get(book_id, [])
+            book_reviews = reviews_dict.get(book_id, [])
+            book_chapters = chapters_dict.get(book_id, [])
             combined_entry = {
                 "id": book['id'],
                 "book_name": book['book_name'],
@@ -85,7 +121,9 @@ class CombinedBookGenreListView(APIView):
                 "book_link": book['book_link'],
                 "book_cover": book['book_cover'],
                 "book_description": book['book_description'],
-                "genres": book_genres
+                "genres": book_genres,
+                "reviews": book_reviews,
+                "chapters": book_chapters  # Adding chapters to the combined entry
             }
             combined_data.append(combined_entry)
 
@@ -96,19 +134,40 @@ class CombinedBookGenreListView(APIView):
         try:
             book = Book.objects.get(id=book_id)
             book_data = BookSerializer(book).data
-            
+
             # Retrieve genres for the book
             genres = BookGenre.objects.filter(book=book_id)
             genres_data = BookGenreSerializer(genres, many=True).data
-            
-            # Combine book data with genres
+
+            # Fetch all users and map user_id to username
+            users = User.objects.all().values('id', 'username')
+            user_dict = {user['id']: user['username'] for user in users}
+
+            # Retrieve reviews for the book and map user_id to username
+            reviews = BookReview.objects.filter(book_id=book_id)
+            reviews_data = []
+            for review in reviews:
+                username = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
+                reviews_data.append({
+                    "review": review.review,
+                    "rating": review.rating,
+                    "username": username
+                })
+
+            # Retrieve chapters for the book
+            chapters = BookChapter.objects.filter(book_id=book_id).values('chapter_number', 'chapter_title')
+            chapters_data = [{"chapter_number": chapter['chapter_number'], "chapter_title": chapter['chapter_title']} for chapter in chapters]
+
+            # Combine book data with genres, reviews, and chapters
             book_genres = [genre['genre'] for genre in genres_data]
             book_data['genres'] = book_genres
-            
+            book_data['reviews'] = reviews_data
+            book_data['chapters'] = chapters_data  # Adding chapters to the response data
+
             return Response(book_data, status=status.HTTP_200_OK)
+        
         except Book.DoesNotExist:
             return Response({"error": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
-
 class CombinedBookGenreListViewSearch(generics.ListAPIView):
     serializer_class = BookSerializer
 
@@ -126,15 +185,36 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
         # Call the original list method to get the queryset
         queryset = self.get_queryset()
         books_data = BookSerializer(queryset, many=True).data
-        
-        # Combine book data with genres
+
+        # Fetch all users and map user_id to username
+        users = User.objects.all().values('id', 'username')
+        user_dict = {user['id']: user['username'] for user in users}
+
+        # Combine book data with genres, reviews, and chapters
         combined_data = []
         for book in books_data:
             book_id = book['id']
+            
             # Retrieve genres for the found book
             genres = BookGenre.objects.filter(book=book_id)
             genres_data = BookGenreSerializer(genres, many=True).data
             
+            # Retrieve reviews for the found book and map user_id to username
+            reviews = BookReview.objects.filter(book_id=book_id)
+            reviews_data = []
+            for review in reviews:
+                username = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
+                reviews_data.append({
+                    "review": review.review,
+                    "rating": review.rating,
+                    "username": username
+                })
+            
+            # Retrieve chapters for the found book
+            chapters = BookChapter.objects.filter(book_id=book_id).values('chapter_number', 'chapter_title')
+            chapters_data = [{"chapter_number": chapter['chapter_number'], "chapter_title": chapter['chapter_title']} for chapter in chapters]
+            
+            # Combine all the data into a single entry
             combined_entry = {
                 "id": book['id'],
                 "book_name": book['book_name'],
@@ -142,7 +222,9 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
                 "book_link": book['book_link'],
                 "book_cover": book['book_cover'],
                 "book_description": book['book_description'],
-                "genres": [genre['genre'] for genre in genres_data]
+                "genres": [genre['genre'] for genre in genres_data],
+                "reviews": reviews_data,  # Add reviews with usernames
+                "chapters": chapters_data   # Add chapters
             }
             combined_data.append(combined_entry)
 
@@ -151,4 +233,3 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
             return Response({"message": "No books found matching your search."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(combined_data, status=status.HTTP_200_OK)
-
