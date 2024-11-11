@@ -72,3 +72,30 @@ class BookGenre(models.Model):
 
 #     def __str__(self):
 #         return f"{self.user.username} - {self.book.book_name} - {self.progress}"
+
+class BookReview(models.Model):
+    id = models.AutoField(primary_key=True)  # Primary key ID field
+    book_id = models.IntegerField(null=False)  # ID of the book being reviewed
+    user_id = models.IntegerField(null=False)  # ID of the user submitting the review
+    review = models.TextField(null=False)  # Text of the review
+    rating = models.IntegerField(null=False)  # Numerical rating, e.g., 1-5
+
+    def __str__(self):
+        return f"Review {self.id} for Book ID {self.book_id} by User ID {self.user_id}"
+
+    class Meta:
+        db_table = 'book_reviews'
+
+class User(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=255)  # Ensure the password is securely hashed
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set the creation time
+
+    class Meta:
+        db_table = 'users'
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
