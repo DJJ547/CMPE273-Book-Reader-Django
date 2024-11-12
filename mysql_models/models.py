@@ -7,6 +7,7 @@ class Book(models.Model):
     book_link = models.CharField(max_length=100, null=False)
     book_cover = models.CharField(max_length=100, null=False)
     book_description = models.CharField(max_length=500, null=False)
+    num_of_chapters = models.IntegerField(null=False)
 
     def __str__(self):
         return self.book_name
@@ -16,7 +17,6 @@ class Book(models.Model):
 
 
 class BookChapter(models.Model):
-    # book_id as a foreign key
     book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
     chapter_number = models.IntegerField(null=False)
     chapter_title = models.CharField(max_length=100, null=True)
@@ -44,19 +44,18 @@ class BookGenre(models.Model):
         ('adventure', 'Adventure')
     ]
 
-     # Set book as a foreign key and primary key
     book = models.OneToOneField(Book, on_delete=models.CASCADE, primary_key=True)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
-        unique_together = ('book_id', 'genre')  # Ensure each combination is unique
+        unique_together = ('book_id', 'genre')
         db_table = 'book_genres'
 
     def __str__(self):
-        return self.get_genre_display()  # Returns the human-readable name of the genre
+        return self.get_genre_display()
 
 
-class ReadingLists(models.Model):
+class ReadingList(models.Model):
     id = models.AutoField(primary_key=True)
     user_id = models.IntegerField()
     name = models.CharField(max_length=45, null=True)
@@ -64,9 +63,11 @@ class ReadingLists(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     flag_color = models.CharField(max_length=45, null=True)
+    icon = models.CharField(max_length=45, null=True)
+    is_favorite = models.BooleanField()
 
     class Meta:
-        db_table = 'reading_list'  # Replace with your actual table name
+        db_table = 'reading_lists'
 
     def __str__(self):
         return self.name
