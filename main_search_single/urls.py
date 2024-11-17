@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import BookListView, BookDetailView, ListTablesView, BookSearchView, BookGenreListView, CombinedBookGenreListView,CombinedBookGenreListViewSearch
+from .views import BookListView, BookDetailView, ListTablesView, BookSearchView, BookGenreListView, CombinedBookGenreListView,CombinedBookGenreListViewSearch, BookReviewCreateView
 
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('books/with-genres/search/', CombinedBookGenreListViewSearch.as_view(), name='search-books'),  # For searching books
     path('books/with-genres/<int:book_id>/', CombinedBookGenreListView.as_view(), name='single-book'),  # For getting a single book
     path('books/with-genres/', CombinedBookGenreListView.as_view(), name='combined-book-genre-list'),  # For getting all books
+    path('reviews/', BookReviewCreateView.as_view(), name='create_review'),
 ]
