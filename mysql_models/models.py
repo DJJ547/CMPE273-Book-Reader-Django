@@ -1,4 +1,13 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    google_id = models.CharField(
+        max_length=50, blank=True, null=True)  # Store Google ID
+#    profile_picture = models.URLField(null=True, blank=True)  # Store Google profile picture
+#    bookshelf = models.JSONField(default=list, blank=True)
+#    reading_history = models.JSONField(default=dict, blank=True)
 
 
 class Book(models.Model):
@@ -17,11 +26,12 @@ class Book(models.Model):
 
 class BookChapter(models.Model):
     # book_id as a foreign key
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
     chapter_number = models.IntegerField(null=False)
     chapter_title = models.CharField(max_length=100, null=True)
 
     class Meta:
+        unique_together = ('book_id', 'chapter_number')
         db_table = 'book_chapters'
 
 
@@ -43,13 +53,15 @@ class BookGenre(models.Model):
         ('adventure', 'Adventure')
     ]
 
-     # Set book as a foreign key and primary key
-    book = models.OneToOneField(Book, on_delete=models.CASCADE, primary_key=True)
+    # Set book as a foreign key and primary key
+    book = models.OneToOneField(
+        Book, on_delete=models.CASCADE, primary_key=True)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
-        unique_together = ('book_id', 'genre')  # Ensure each combination is unique
-        db_table = 'book_genres' 
+        # Ensure each combination is unique
+        unique_together = ('book_id', 'genre')
+        db_table = 'book_genres'
 
     def __str__(self):
         return self.get_genre_display()  # Returns the human-readable name of the genre
@@ -76,7 +88,8 @@ class BookGenre(models.Model):
 class BookReview(models.Model):
     id = models.AutoField(primary_key=True)  # Primary key ID field
     book_id = models.IntegerField(null=False)  # ID of the book being reviewed
-    user_id = models.IntegerField(null=False)  # ID of the user submitting the review
+    # ID of the user submitting the review
+    user_id = models.IntegerField(null=False)
     review = models.TextField(null=False)  # Text of the review
     rating = models.IntegerField(null=False)  # Numerical rating, e.g., 1-5
 
@@ -86,16 +99,18 @@ class BookReview(models.Model):
     class Meta:
         db_table = 'book_reviews'
 
+
 class User(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=255)  # Ensure the password is securely hashed
-    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set the creation time
+    # Ensure the password is securely hashed
+    password = models.CharField(max_length=255)
+    # Automatically set the creation time
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'users'
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-

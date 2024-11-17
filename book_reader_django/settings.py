@@ -39,7 +39,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'  # Set to 'mandatory' for email verification
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
 
-AUTH_USER_MODEL = 'authentication.CustomUser'
+AUTH_USER_MODEL = 'mysql_models.CustomUser'
 
 SITE_ID = 1
 
@@ -190,6 +190,17 @@ DATABASES = {
     }
 }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'book_reader_customuser',
+        'USER': 'dina',
+        'PASSWORD': '12345',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -265,4 +276,3 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
