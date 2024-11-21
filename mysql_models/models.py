@@ -61,53 +61,12 @@ class BookGenre(models.Model):
         db_table = 'book_genres'
 
 
-# ==========================================================================================
-class ReadingList(models.Model):
-    id = models.AutoField(primary_key=True)
-    user_id = models.IntegerField()
-    name = models.CharField(max_length=45, null=True)
-    description = models.CharField(max_length=500, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    flag_color = models.CharField(max_length=45, null=True)
-    icon = models.CharField(max_length=45, null=True)
-    is_favorite = models.BooleanField()
-
-    class Meta:
-        db_table = 'reading_lists'
-
-
-class ReadingListBook(models.Model):
-    UNREAD = 'unread'
-    READING = 'reading'
-    COMPLETED = 'completed'
-
-    STATUS_CHOICES = [
-        (UNREAD, 'unread'),
-        (READING, 'reading'),
-        (COMPLETED, 'completed'),
-    ]
-
-    reading_list_id = models.AutoField(primary_key=True)
-    book_id = models.IntegerField()
-    added_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=UNREAD)
-
-    class Meta:
-        unique_together = ('reading_list_id', 'book_id')
-        db_table = 'reading_list_books'
-
-    def __str__(self):
-        return f"Book ID {self.book_id} - Status: {self.status}"
-# ==========================================================================================
-
-
 class Shelf(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=45, unique=True)
-    icon = models.CharField(max_length=45, default='mood')
-    background_color = models.CharField(max_length=45, default='white')
+    name = models.CharField(max_length=45, null=False)
+    icon = models.CharField(max_length=45, default='mood', null=False)
+    background_color = models.CharField(max_length=45, default='white', null=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 

@@ -29,6 +29,7 @@ def fetch_library_data(user_id):
         wishlist_books = WishlistBook.objects.filter(user_id=user_id)
         for wishlist_book in wishlist_books:
             book_meta = Book.objects.get(id=wishlist_book.book.id)
+            history_status = fetch_history_stat(user_id, wishlist_book.book.id)
             wishlist_book_data = {
                 "book_id": book_meta.id,
                 "book_name": book_meta.book_name,
@@ -37,7 +38,10 @@ def fetch_library_data(user_id):
                 "book_cover": book_meta.book_cover,
                 "book_description": book_meta.book_description,
                 "num_of_chapters": book_meta.num_of_chapters,
-                "added_at": wishlist_book.added_at,
+                "current_chapter": history_status['current_chapter'],
+                "last_read_at": history_status['last_read_at'],
+                "is_wishlisted": True,
+                "wishlist_added_at": wishlist_book.added_at,
                 "genres": fetch_book_genres(book_meta.id),
                 "average_rating": fetch_book_rating(book_meta.id),
             }
@@ -48,6 +52,8 @@ def fetch_library_data(user_id):
         history_books = BookProgress.objects.filter(user_id=user_id)
         for history_book in history_books:
             book_meta = Book.objects.get(id=history_book.book.id)
+            wishlist_status = fetch_wishlist_stat(
+                user_id, history_book.book.id)
             history_book_data = {
                 "book_id": book_meta.id,
                 "book_name": book_meta.book_name,
@@ -56,6 +62,9 @@ def fetch_library_data(user_id):
                 "book_cover": book_meta.book_cover,
                 "book_description": book_meta.book_description,
                 "num_of_chapters": book_meta.num_of_chapters,
+                "is_wishlisted": wishlist_status['is_wishlisted'],
+                "wishlist_added_at": wishlist_status['wishlist_added_at'],
+                "current_chapter": history_book.current_chapter,
                 "last_read_at": history_book.last_read_at,
                 "genres": fetch_book_genres(book_meta.id),
                 "average_rating": fetch_book_rating(book_meta.id),
@@ -98,6 +107,7 @@ def fetch_book_meta(user_id, shelf_id, book_id):
         book_meta = Book.objects.get(id=book_id)
         shelf_status = fetch_shelf_stat(shelf_id, book_id)
         wishlist_status = fetch_wishlist_stat(user_id, book_id)
+        history_status = fetch_history_stat(user_id, book_id)
         shelf_book_data = {
             "book_id": book_id,
             "book_name": book_meta.book_name,
@@ -108,9 +118,14 @@ def fetch_book_meta(user_id, shelf_id, book_id):
             "num_of_chapters": book_meta.num_of_chapters,
             "added_at": shelf_status['added_at'],
             "is_wishlisted": wishlist_status['is_wishlisted'],
+            "wishlist_added_at": wishlist_status['wishlist_added_at'],
+            "current_chapter": history_status['current_chapter'],
+            "last_read_at": history_status['last_read_at'],
             "genres": fetch_book_genres(book_id),
             "average_rating": fetch_book_rating(book_id),
         }
+        if "last_read_at" in history_status:
+            shelf_book_data['last_read_at'] = history_status['last_read_at']
         return shelf_book_data
     except Exception as e:
         print("An error occurred:", e)
@@ -129,6 +144,28 @@ def fetch_shelf_stat(shelf_id, book_id):
         return []
 
 
+def fetch_history_stat(user_id, book_id):
+    try:
+        is_in_history = BookProgress.objects.filter(
+            user_id=user_id, book_id=book_id).exists()
+        if is_in_history:
+            history_book = BookProgress.objects.get(
+                user_id=user_id, book_id=book_id)
+            shelf_stat_data = {
+                "current_chapter": history_book.current_chapter,
+                "last_read_at": history_book.last_read_at,
+            }
+        else:
+            shelf_stat_data = {
+                "current_chapter": 0,
+                "last_read_at": None,
+            }
+        return shelf_stat_data
+    except Exception as e:
+        print("An error occurred:", e)
+        return []
+
+
 def fetch_wishlist_stat(user_id, book_id):
     try:
         is_wishlisted = WishlistBook.objects.filter(
@@ -138,12 +175,12 @@ def fetch_wishlist_stat(user_id, book_id):
                 user_id=user_id, book_id=book_id)
             shelf_stat_data = {
                 "is_wishlisted": is_wishlisted,
-                "added_at": wishlist_book.added_at,
+                "wishlist_added_at": wishlist_book.added_at,
             }
         else:
             shelf_stat_data = {
                 "is_wishlisted": is_wishlisted,
-                "added_at": None,
+                "wishlist_added_at": None,
             }
         return shelf_stat_data
     except Exception as e:
@@ -280,14 +317,14 @@ def edit_shelf(user_id, shelf):
         shelf_to_edit.save()
         edited_shelf = Shelf.objects.get(user_id=user_id, id=shelf['id'])
         edited_shelf_data = {
-                "id": edited_shelf.id,
-                "name": edited_shelf.name,
-                "icon": edited_shelf.icon,
-                "background_color": edited_shelf.background_color,
-                "created_at": edited_shelf.created_at,
-                "updated_at": edited_shelf.updated_at,
-                "books": []
-            }
+            "id": edited_shelf.id,
+            "name": edited_shelf.name,
+            "icon": edited_shelf.icon,
+            "background_color": edited_shelf.background_color,
+            "created_at": edited_shelf.created_at,
+            "updated_at": edited_shelf.updated_at,
+            "books": []
+        }
         shelf_books_data = []
         shelf_books = ShelfBook.objects.filter(shelf_id=shelf['id'])
         for shelf_book in shelf_books:
@@ -298,6 +335,7 @@ def edit_shelf(user_id, shelf):
         return {"result": True, "data": edited_shelf_data, "message": "Shelf successfully edited!"}
     except Exception as e:
         return {"result": False, "message": f"Error editing shelf: {e}"}
+
 
 def remove_shelf(user_id, shelf_id):
     try:

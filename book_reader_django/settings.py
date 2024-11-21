@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     'authentication',
     'google_book_test',
     'library',
-    'list_history',
     'main_search_single',
     'reading_page',
     "mysql_models"

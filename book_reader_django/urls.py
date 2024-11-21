@@ -22,7 +22,6 @@ urlpatterns = [
     path('ai/', include('ai_lambda.urls')),
     path('auth/', include('authentication.urls')),
     path('main/', include('main_search_single.urls')),
-    path('listhistory/', include('list_history.urls')),
     path('library/', include('library.urls')),
     path('reading/', include('reading_page.urls')),
 
