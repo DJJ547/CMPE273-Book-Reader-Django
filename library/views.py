@@ -1,4 +1,4 @@
-from .mysql import fetch_shelves_data, fetch_wishlist_data, fetch_history_data, fetch_shelves_list_data, add_book_to_shelf, remove_book_from_shelf, add_shelf, remove_shelf, add_book_to_wishlist, remove_book_from_wishlist
+from .mysql import fetch_library_data, fetch_shelves_list_data, add_book_to_shelf, remove_book_from_shelf, add_shelf, edit_shelf, remove_shelf, add_book_to_wishlist, remove_book_from_wishlist, add_book_to_history, remove_book_from_history
 from rest_framework import status
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
@@ -10,30 +10,12 @@ load_dotenv()
 
 
 @api_view(['GET'])
-def get_shelves_data_view(request):
+def get_library_data_view(request):
     user_id = request.query_params.get('user_id', '')
-    shelves_data = fetch_shelves_data(user_id)
-    if not shelves_data['data']:
-        return Response(shelves_data, status=status.HTTP_404_NOT_FOUND)
-    return Response(shelves_data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def get_wishlist_data_view(request):
-    user_id = request.query_params.get('user_id', '')
-    wishlist_data = fetch_wishlist_data(user_id)
-    if not wishlist_data['data']:
-        return Response(wishlist_data, status=status.HTTP_404_NOT_FOUND)
-    return Response(wishlist_data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def get_history_data_view(request):
-    user_id = request.query_params.get('user_id', '')
-    history_Data = fetch_history_data(user_id)
-    if not history_Data['data']:
-        return Response(history_Data, status=status.HTTP_404_NOT_FOUND)
-    return Response(history_Data, status=status.HTTP_200_OK)
+    library_data = fetch_library_data(user_id)
+    if not library_data['data']:
+        return Response(library_data, status=status.HTTP_404_NOT_FOUND)
+    return Response(library_data, status=status.HTTP_200_OK)
     
 
 @api_view(['GET'])
@@ -49,17 +31,28 @@ def get_shelf_list_view(request):
 def add_shelf_view(request):
     user_id = request.data.get('user_id', '')
     shelf = request.data.get('shelf', '')
-    result = add_shelf(user_id, shelf)
-    if not result['data']:
-        return Response(result, status=status.HTTP_404_NOT_FOUND)
-    return Response(result, status=status.HTTP_200_OK)
+    output = add_shelf(user_id, shelf)
+    if not output['result']:
+        return Response(output, status=status.HTTP_404_NOT_FOUND)
+    return Response(output, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def edit_shelf_view(request):
+    user_id = request.data.get('user_id', '')
+    shelf = request.data.get('shelf', '')
+    output = edit_shelf(user_id, shelf)
+    if not output['result']:
+        return Response(output, status=status.HTTP_404_NOT_FOUND)
+    return Response(output, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
 def remove_shelf_view(request):
+    user_id = request.query_params.get('user_id', '')
     shelf_id = request.query_params.get('shelf_id', '')
-    result = remove_shelf(shelf_id)
-    if not result['data']:
+    result = remove_shelf(user_id, shelf_id)
+    if not result['result']:
         return Response(result, status=status.HTTP_404_NOT_FOUND)
     return Response(result, status=status.HTTP_200_OK)
 
@@ -77,8 +70,8 @@ def add_book_to_shelf_view(request):
 
 @api_view(['DELETE'])
 def remove_book_from_shelf_view(request):
-    shelf_id = request.data.get('shelf_id', '')
-    book_id = request.data.get('book_id', '')
+    shelf_id = request.query_params.get('shelf_id', '')
+    book_id = request.query_params.get('book_id', '')
     result = remove_book_from_shelf(shelf_id, book_id)
     if not result['data']:
         return Response(result, status=status.HTTP_404_NOT_FOUND)
@@ -97,9 +90,29 @@ def add_book_to_wishlist_view(request):
 
 @api_view(['DELETE'])
 def remove_book_from_wishlist_view(request):
+    user_id = request.query_params.get('user_id', '')
+    book_id = request.query_params.get('book_id', '')
+    result = remove_book_from_wishlist(user_id, book_id)
+    if not result['data']:
+        return Response(result, status=status.HTTP_404_NOT_FOUND)
+    return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def add_book_to_history_view(request):
     user_id = request.data.get('user_id', '')
     book_id = request.data.get('book_id', '')
-    result = remove_book_from_wishlist(user_id, book_id)
+    result = add_book_to_history(user_id, book_id)
+    if not result['data']:
+        return Response(result, status=status.HTTP_404_NOT_FOUND)
+    return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def remove_book_from_history_view(request):
+    user_id = request.query_params.get('user_id', '')
+    book_id = request.query_params.get('book_id', '')
+    result = remove_book_from_history(user_id, book_id)
     if not result['data']:
         return Response(result, status=status.HTTP_404_NOT_FOUND)
     return Response(result, status=status.HTTP_200_OK)
