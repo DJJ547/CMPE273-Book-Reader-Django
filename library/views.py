@@ -85,7 +85,7 @@ def add_book_to_wishlist_view(request):
     user_id = request.data.get('user_id', '')
     book_id = request.data.get('book_id', '')
     output = add_book_to_wishlist(user_id, book_id)
-    if not output['data']:
+    if not output['result']:
         return Response(output, status=status.HTTP_404_NOT_FOUND)
     return Response(output, status=status.HTTP_200_OK)
 
@@ -95,7 +95,7 @@ def remove_book_from_wishlist_view(request):
     user_id = request.query_params.get('user_id', '')
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_wishlist(user_id, book_id)
-    if not output['data']:
+    if not output['result']:
         return Response(output, status=status.HTTP_404_NOT_FOUND)
     return Response(output, status=status.HTTP_200_OK)
 
@@ -105,7 +105,7 @@ def add_book_to_history_view(request):
     user_id = request.data.get('user_id', '')
     book_id = request.data.get('book_id', '')
     output = add_book_to_history(user_id, book_id)
-    if not output['data']:
+    if not output['result']:
         return Response(output, status=status.HTTP_404_NOT_FOUND)
     return Response(output, status=status.HTTP_200_OK)
 
@@ -115,6 +115,6 @@ def remove_book_from_history_view(request):
     user_id = request.query_params.get('user_id', '')
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_history(user_id, book_id)
-    if not output['data']:
+    if not output['result']:
         return Response(output, status=status.HTTP_404_NOT_FOUND)
     return Response(output, status=status.HTTP_200_OK)

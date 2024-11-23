@@ -391,58 +391,58 @@ def remove_book_from_shelf(user_id, shelf_id, book_id):
 def add_book_to_wishlist(user_id, book_id):
     try:
         if WishlistBook.objects.filter(user_id=user_id, book_id=book_id).exists():
-            return {"data": False, "message": f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the wishlist."}
+            return {"result": False, "message": f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the wishlist."}
         else:
             new_withlist_book = WishlistBook.objects.create(
                 user_id=user_id,
                 book_id=book_id,
             )
             new_withlist_book.save()
-            return {"data": True, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the wishlist."}
+            return {"result": True, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the wishlist."}
     except Exception as e:
         print(f"Exception: {e}")
-        return {"data": False, "message": f"Error adding book to wishlist: {e}"}
+        return {"result": False, "message": f"Error adding book to wishlist: {e}"}
 
 
 def remove_book_from_wishlist(user_id, book_id):
     try:
         if not WishlistBook.objects.filter(user_id=user_id, book_id=book_id).exists():
-            return {"data": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' does not exist in the wishlist."}
+            return {"result": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' does not exist in the wishlist."}
         else:
             withlist_book = WishlistBook.objects.get(
                 user_id=user_id, book_id=book_id)
             withlist_book.delete()
-            return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the wishlist."}
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the wishlist."}
     except Exception as e:
         print(f"Exception: {e}")
-        return {"data": False, "message": f"Error removing book from wishlist: {e}"}
+        return {"result": False, "message": f"Error removing book from wishlist: {e}"}
 
 
 def add_book_to_history(user_id, book_id):
     try:
         if BookProgress.objects.filter(user_id=user_id, book_id=book_id).exists():
-            return {"data": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' already exist in the history."}
+            return {"result": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' already exist in the history."}
         else:
             new_history_book = WishlistBook.objects.create(
                 user_id=user_id,
                 book_id=book_id,
             )
             new_history_book.save()
-            return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully added to the history."}
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully added to the history."}
     except Exception as e:
         print(f"Exception: {e}")
-        return {"data": False, "message": f"Error adding book to history: {e}"}
+        return {"result": False, "message": f"Error adding book to history: {e}"}
 
 
 def remove_book_from_history(user_id, book_id):
     try:
         if not BookProgress.objects.filter(user_id=user_id, book_id=book_id).exists():
-            return {"data": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' does not exist in the history."}
+            return {"result": False, "message": f"The book with id '{book_id}' from user with id '{user_id}' does not exist in the history."}
         else:
             history_book = BookProgress.objects.get(
                 user_id=user_id, book_id=book_id)
             history_book.delete()
-            return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the history."}
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the history."}
     except Exception as e:
         print(f"Exception: {e}")
-        return {"data": False, "message": f"Error removing book from history: {e}"}
+        return {"result": False, "message": f"Error removing book from history: {e}"}
