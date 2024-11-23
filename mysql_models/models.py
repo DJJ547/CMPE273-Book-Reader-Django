@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=45, null=False)
@@ -7,7 +8,7 @@ class User(models.Model):
     username = models.CharField(max_length=45, null=False, unique=True)
     password = models.CharField(max_length=45, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         db_table = 'users'
 
@@ -26,7 +27,8 @@ class Book(models.Model):
 
 
 class BookChapter(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     chapter_number = models.IntegerField(null=False)
     chapter_title = models.CharField(max_length=100, null=False)
 
@@ -52,8 +54,8 @@ class BookGenre(models.Model):
         ('martial_arts', 'Martial Arts'),
         ('adventure', 'Adventure')
     ]
-
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, null=False)
 
     class Meta:
@@ -66,7 +68,8 @@ class Shelf(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=45, null=False)
     icon = models.CharField(max_length=45, default='mood', null=False)
-    background_color = models.CharField(max_length=45, default='white', null=False)
+    background_color = models.CharField(
+        max_length=45, default='white', null=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
@@ -76,17 +79,19 @@ class Shelf(models.Model):
 
 
 class ShelfBook(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
+    id = models.AutoField(primary_key=True)
     shelf = models.ForeignKey(Shelf, on_delete=models.CASCADE)
-    added_at = models.DateTimeField(auto_now_add=True, null=False)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('shelf', 'book')
+        unique_together = ('shelf', 'book')  # Ensures a unique relationship between shelf and book
         db_table = 'shelf_books'
-        
+
 
 class WishlistBook(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True, null=False)
 
@@ -107,7 +112,8 @@ class BookReview(models.Model):
 
 
 class BookProgress(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     current_chapter = models.IntegerField(default=0, null=False)
     last_read_at = models.DateTimeField(auto_now=True, null=False)

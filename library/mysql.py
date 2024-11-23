@@ -74,6 +74,7 @@ def fetch_library_data(user_id):
 
         return {"data": library_data_map, "message": f"Library data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": {}, "message": f"An error occurred: {e}."}
 
 
@@ -99,6 +100,7 @@ def fetch_shelves_data(user_id):
             shelves_data_map[shelf.name]['books'] = shelf_books_data
         return {"data": shelves_data_map, "message": f"Shelves data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": {}, "message": f"An error occurred: {e}."}
 
 
@@ -116,7 +118,7 @@ def fetch_book_meta(user_id, shelf_id, book_id):
             "book_cover": book_meta.book_cover,
             "book_description": book_meta.book_description,
             "num_of_chapters": book_meta.num_of_chapters,
-            "added_at": shelf_status['added_at'],
+            "shelf_added_at": shelf_status['added_at'],
             "is_wishlisted": wishlist_status['is_wishlisted'],
             "wishlist_added_at": wishlist_status['wishlist_added_at'],
             "current_chapter": history_status['current_chapter'],
@@ -124,8 +126,6 @@ def fetch_book_meta(user_id, shelf_id, book_id):
             "genres": fetch_book_genres(book_id),
             "average_rating": fetch_book_rating(book_id),
         }
-        if "last_read_at" in history_status:
-            shelf_book_data['last_read_at'] = history_status['last_read_at']
         return shelf_book_data
     except Exception as e:
         print("An error occurred:", e)
@@ -235,6 +235,7 @@ def fetch_wishlist_data(user_id):
             wishlist_books_data.append(wishlist_book_data)
         return {"data": wishlist_books_data, "message": f"Wishlist data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": [], "message": f"An error occurred: {e}."}
 
 
@@ -259,6 +260,7 @@ def fetch_history_data(user_id):
             history_books_data.append(history_book_data)
         return {"data": history_books_data, "message": f"History data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": [], "message": f"An error occurred: {e}."}
 
 
@@ -274,6 +276,7 @@ def fetch_shelves_list_data(user_id):
             shelves_data.append(shelf_data)
         return {"data": shelves_data, "message": f"Shelves list data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": [], "message": f"An error occurred: {e}."}
 
 
@@ -303,6 +306,7 @@ def add_shelf(user_id, shelf):
             }
             return {"result": True, "data": added_shelf_data, "message": "Shelf successfully created!"}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"result": False, "data": added_shelf_data, "message": f"Error creating shelf: {e}"}
 
 
@@ -329,11 +333,12 @@ def edit_shelf(user_id, shelf):
         shelf_books = ShelfBook.objects.filter(shelf_id=shelf['id'])
         for shelf_book in shelf_books:
             shelf_book_data = fetch_book_meta(
-                user_id, shelf.id, shelf_book.book_id)
+                user_id, shelf['id'], shelf_book.book_id)
             shelf_books_data.append(shelf_book_data)
         edited_shelf_data['books'] = shelf_books_data
         return {"result": True, "data": edited_shelf_data, "message": "Shelf successfully edited!"}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"result": False, "message": f"Error editing shelf: {e}"}
 
 
@@ -346,33 +351,41 @@ def remove_shelf(user_id, shelf_id):
             shelf.delete()
             return {"result": True, "message": f"Shelf with given id '{shelf_id}' successfully removed!"}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"result": False, "message": f"Error creating shelf: {e}"}
 
 
 def add_book_to_shelf(user_id, shelf_id, book_id):
     try:
-        if ShelfBook.objects.filter(shelf__user_id=user_id, shelf_id=shelf_id, book_id=book_id).exists():
-            return {"data": False, "message": f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'."}
+        if ShelfBook.objects.filter(shelf_id=shelf_id, book_id=book_id).exists():
+            print(f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'.")
+            return {"result": False, "data": {}, "message": f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'."}
         else:
             new_book = ShelfBook.objects.create(
                 shelf_id=shelf_id, book_id=book_id)
             new_book.save()
-            return {"data": True, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'."}
+            added_book = fetch_book_meta(user_id, shelf_id, book_id)
+            print(f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'.")
+            return {"result": True, "data": added_book, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'."}
     except Exception as e:
-        return {"data": False, "message": f"Error adding book to shelf: {e}"}
+        print(f"Exception: {e}")
+        return {"result": False, "data": {}, "message": f"Error adding book to shelf: {e}"}
 
 
-def remove_book_from_shelf(shelf_id, book_id):
+def remove_book_from_shelf(user_id, shelf_id, book_id):
     try:
         if not ShelfBook.objects.filter(shelf_id=shelf_id, book_id=book_id).exists():
-            return {"data": False, "message": f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'."}
+            print(f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'.")
+            return {"result": False, "message": f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'."}
         else:
             shelf_book = ShelfBook.objects.get(
                 shelf_id=shelf_id, book_id=book_id)
             shelf_book.delete()
-            return {"data": True, "message": f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'"}
+            print(f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'")
+            return {"result": True, "message": f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'"}
     except Exception as e:
-        return {"data": False, "message": f"Error removing book from shelf: {e}"}
+        print(f"Exception: {e}")
+        return {"result": False, "message": f"Error removing book from shelf: {e}"}
 
 
 def add_book_to_wishlist(user_id, book_id):
@@ -387,6 +400,7 @@ def add_book_to_wishlist(user_id, book_id):
             new_withlist_book.save()
             return {"data": True, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the wishlist."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": False, "message": f"Error adding book to wishlist: {e}"}
 
 
@@ -400,6 +414,7 @@ def remove_book_from_wishlist(user_id, book_id):
             withlist_book.delete()
             return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the wishlist."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": False, "message": f"Error removing book from wishlist: {e}"}
 
 
@@ -415,6 +430,7 @@ def add_book_to_history(user_id, book_id):
             new_history_book.save()
             return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully added to the history."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": False, "message": f"Error adding book to history: {e}"}
 
 
@@ -428,4 +444,5 @@ def remove_book_from_history(user_id, book_id):
             history_book.delete()
             return {"data": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' successfully removed from the history."}
     except Exception as e:
+        print(f"Exception: {e}")
         return {"data": False, "message": f"Error removing book from history: {e}"}
