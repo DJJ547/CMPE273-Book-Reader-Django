@@ -1,4 +1,4 @@
-from .serializers import BookSerializer,BookGenreSerializer
+from .serializers import BookSerializer,BookGenreSerializer,BookReviewSerializer
 from mysql_models.models import Book,BookGenre,BookReview,BookChapter,User
 from rest_framework import generics,viewsets
 from rest_framework.response import Response
@@ -233,3 +233,12 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
             return Response({"message": "No books found matching your search."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(combined_data, status=status.HTTP_200_OK)
+
+class BookReviewCreateView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = BookReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            # Save the new review to the database
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
