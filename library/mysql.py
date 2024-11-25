@@ -104,6 +104,37 @@ def fetch_shelves_data(user_id):
         return {"data": {}, "message": f"An error occurred: {e}."}
 
 
+def fetch_shelves_with_current_book(user_id, book_id):
+    try:
+        shelves_data_list = []
+        shelves = Shelf.objects.filter(user_id=user_id)
+        for shelf in shelves:
+            book_is_in_shelf = False
+            shelf_obj = {
+                "id": shelf.id,
+                "name": shelf.name,
+                "icon": shelf.icon,
+                "background_color": shelf.background_color,
+                "created_at": shelf.created_at,
+                "updated_at": shelf.updated_at,
+            }
+            shelf_books_data = []
+            shelf_books = ShelfBook.objects.filter(shelf_id=shelf.id)
+            for shelf_book in shelf_books:
+                if shelf_book.book_id == book_id:
+                    book_is_in_shelf = True
+                shelf_book_data = fetch_book_meta(
+                    user_id, shelf.id, shelf_book.book_id)
+                shelf_books_data.append(shelf_book_data)
+            shelf_obj['books'] = shelf_books_data
+            if book_is_in_shelf:
+                shelves_data_list.append(shelf_obj)
+        return {"result": True if shelves_data_list else False, "data": shelves_data_list, "message": f"Shelves data list for user with id '{user_id}' for book with id '{book_id}' successfully fetched."}
+    except Exception as e:
+        print(f"Exception: {e}")
+        return {"result": False, "data": [], "message": f"An error occurred: {e}."}
+
+
 def fetch_book_meta(user_id, shelf_id, book_id):
     try:
         book_meta = Book.objects.get(id=book_id)
