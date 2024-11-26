@@ -18,8 +18,8 @@ import os
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+""" BASE_DIR = Path(__file__).resolve().parent.parent """
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Google OAuth2 keys from the Google Console
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_OAUTH2_CLIENT_ID')
@@ -55,6 +55,7 @@ CORS_ALLOW_HEADERS = [
     "authorization",
     "x-csrftoken",
     # Add any other custom headers you need
+    'X-Paragraph-Timings'
 ]
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -204,6 +205,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -224,3 +226,13 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # Media files
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/0',  # Redis server URL
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+    }
+}
