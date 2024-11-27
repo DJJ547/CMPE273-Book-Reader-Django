@@ -1,54 +1,67 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from rest_framework.decorators import api_view
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny
-from social_django.utils import load_strategy
-from social_core.backends.google import GoogleOAuth2
 from rest_framework import status
-import requests
-import json
-import os
-from dotenv import load_dotenv
-load_dotenv()
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
+User = get_user_model()
 
+class RegisterUser(APIView):
+    permission_classes = [AllowAny]
 
-# @api_view(['POST'])
-# def exchange_code(request):
-#     # Get the authorization code from the frontend
-#     data = json.loads(request.body)
-#     authorization_code = data.get('code')
-    
-#     if not authorization_code:
-#         return Response({'error': 'Authorization code is missing'}, status=400)
-#     # Exchange the authorization code for access and refresh tokens
-#     token_data = {
-#         'code': authorization_code,
-#         'client_id': os.getenv('GOOGLE_OAUTH2_CLIENT_ID'),
-#         'client_secret': os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET'),
-#         'redirect_uri': "postmessage",
-#         'grant_type': 'authorization_code',
-#     }
-#     print(token_data)
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name")
 
-#     token_response = requests.post(os.getenv('GOOGLE_TOKEN_URL'), data=token_data)
-#     print(token_response.status_code)
-#     print(token_response.json())
+        # Validation checks
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({"error": "Invalid email format"}, status=status.HTTP_400_BAD_REQUEST)
 
-#     if token_response.status_code != 200:
-#         return Response({'error': 'Failed to exchange code for tokens'}, status=token_response.status_code)
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email already in use"}, status=status.HTTP_400_BAD_REQUEST)
 
-#     token_response_data = token_response.json()
+        # User creation
+        try:
+            user = User.objects.create_user(
+                username=email, email=email, password=password,
+                first_name=first_name, last_name=last_name
+            )
+            user.save()
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-#     # Extract access token and ID token (JWT containing user info)
-#     access_token = token_response_data.get('access_token')
-#     id_token = token_response_data.get('id_token')
+class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
 
-#     return Response({
-#         'access_token': access_token,
-#         'id_token': id_token,
-#     })
+    def post(self, request):
+        token = request.data.get("token")
+        try:
+            id_info = id_token.verify_oauth2_token(token, requests.Request(), 'YOUR_GOOGLE_CLIENT_ID')
 
-    
+            email = id_info.get("email")
+            first_name = id_info.get("given_name")
+            last_name = id_info.get("family_name")
+
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={"first_name": first_name, "last_name": last_name, "username": email}
+            )
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            })
+        except ValueError:
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)

@@ -24,6 +24,7 @@ urlpatterns = [
     path('main/', include('main_search_single.urls')),
     path('library/', include('library.urls')),
     path('reading/', include('reading_page.urls')),
+    path('accounts/', include('allauth.urls')),  # Allauth URLs for social login
 
     # This will route all the OAuth-related URLs to the social_django views, including the complete/google/ endpoint for handling OAuth responses.
     path('oauth/', include('social_django.urls', namespace='social')),

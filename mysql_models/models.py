@@ -1,6 +1,14 @@
 from django.db import models
 
 
+class CustomUser(AbstractUser):
+    google_id = models.CharField(
+        max_length=50, blank=True, null=True)  # Store Google ID
+#    profile_picture = models.URLField(null=True, blank=True)  # Store Google profile picture
+#    bookshelf = models.JSONField(default=list, blank=True)
+#    reading_history = models.JSONField(default=dict, blank=True)
+
+
 class User(models.Model):
     id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=45, null=False)
