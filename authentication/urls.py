@@ -1,8 +1,9 @@
 from django.urls import path, include
-from .views import RegisterUser, GoogleLogin
+from .views import BuiltInRegister, GoogleLogin, BuiltInLogin
 
 urlpatterns = [
-    path('signup/', RegisterUser.as_view(), name="register_signup"),
-    path('login/', GoogleLogin.as_view(), name="google_login"),
+    path('signup/', BuiltInRegister.as_view(), name="register signup"),
+    path('login/', BuiltInLogin.as_view(), name="built-in login"),
+    path('google_login/', GoogleLogin.as_view(), name="google login"),
 #    path('admin/', admin.site.urls),
 ]
