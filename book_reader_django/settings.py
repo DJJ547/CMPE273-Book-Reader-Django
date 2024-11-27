@@ -18,8 +18,9 @@ import os
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-""" BASE_DIR = Path(__file__).resolve().parent.parent """
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# AUTH_USER_MODEL = 'mysql_models.User'
 
 # Google OAuth2 keys from the Google Console
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_OAUTH2_CLIENT_ID')
@@ -85,7 +86,7 @@ INSTALLED_APPS = [
     'ai_lambda',
     'authentication',
     'google_book_test',
-    'list_history',
+    'library',
     'main_search_single',
     'reading_page',
     "mysql_models"
@@ -166,6 +167,12 @@ DATABASES = {
         # Replace with your RDS endpoint, e.g., yourdbinstance.xxxxxxx.us-west-1.rds.amazonaws.com
         'HOST': os.getenv('AWS_RDS_HOSTNAME'),
         'PORT': os.getenv('AWS_RDS_PORT'),  # The default MySQL port is 3306
+        'OPTIONS': {
+            # SQL mode that helps enforce stricter data integrity by ensuring that invalid or incompatible values throw errors.
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
+        # sets mysql connection open for 10 minute, allows Django to reuse database connections
+        'CONN_MAX_AGE': 600,
     }
 }
 

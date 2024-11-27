@@ -1,8 +1,8 @@
 import argparse
 from transformers import pipeline
 
-# Load the text generation pipeline with GPT-2
-generator = pipeline("text-generation", model="gpt2")
+# Load the summarization pipeline
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 # Function to split text into manageable chunks
 def chunk_text(text, max_chunk_length=500):
@@ -25,20 +25,15 @@ def summarize_large_text(text):
     # Split the large text into chunks
     chunks = chunk_text(text)
 
-    # Generate summaries for each chunk by instructing GPT-2 to "summarize"
+    # Generate summaries for each chunk
     summaries = []
     for chunk in chunks:
-        prompt = f"Summarize the following text: {chunk}\nSummary:"
-        summary = generator(prompt, max_new_tokens=50, num_return_sequences=1, do_sample=False)[0]['generated_text']
-        
-        # Extract the summary portion by splitting at "Summary:"
-        summary_text = summary.split("Summary:")[-1].strip()
-        summaries.append(summary_text)
+        summary = summarizer(chunk, max_length=150, min_length=50, do_sample=False)[0]['summary_text']
+        summaries.append(summary)
 
     # Combine individual summaries and then re-summarize for final concise summary
     combined_summary = " ".join(summaries)
-    final_prompt = f"Summarize the following text into a short paragraph: {combined_summary}\nSummary:"
-    final_summary = generator(final_prompt, max_new_tokens=30, num_return_sequences=1, do_sample=False)[0]['generated_text'].split("Summary:")[-1].strip()
+    final_summary = summarizer(combined_summary, max_length=50, min_length=25, do_sample=False)[0]['summary_text']
     return final_summary
 
 if __name__ == "__main__":
