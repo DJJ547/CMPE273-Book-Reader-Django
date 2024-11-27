@@ -81,7 +81,7 @@ async def generate_audio(paragraphs, voice, max_retries=2):
 
                 # Calculate timing based on estimated WPM
                 words = len(paragraph.split())
-                average_wpm = 150  # Average words per minute
+                average_wpm = 160  # Average words per minute
                 paragraph_duration = (words / average_wpm) * 60 * 1000  # In milliseconds
 
                 timings.append({
