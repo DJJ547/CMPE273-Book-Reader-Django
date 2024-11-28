@@ -1,5 +1,5 @@
 from .serializers import BookSerializer,BookGenreSerializer,BookReviewSerializer
-from mysql_models.models import Book,BookGenre,BookReview,BookChapter,User
+from mysql_models.models import Book,BookGenre,BookReview,BookChapter, CustomUser
 from rest_framework import generics,viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -66,9 +66,9 @@ class CombinedBookGenreListView(APIView):
         genres_data = BookGenreSerializer(genres, many=True).data
 
 
-        # Retrieve all users and create a dictionary of user_id to username
-        users = User.objects.all().values('id', 'username')
-        user_dict = {user['id']: user['username'] for user in users}
+        # Retrieve all users and create a dictionary of user_id to email
+        users = CustomUser.objects.all().values('id', 'email')
+        user_dict = {user['id']: user['email'] for user in users}
 
         # Retrieve all reviews and organize them by book id
         reviews = BookReview.objects.all()
@@ -79,12 +79,12 @@ class CombinedBookGenreListView(APIView):
                 reviews_dict[book_id] = []
 
             # Use the user_id directly to get the username from user_dict
-            username = user_dict.get(review.user_id, "unknown")  # No need to access .id here
+            email = user_dict.get(review.user_id, "unknown")  # No need to access .id here
             
             reviews_dict[book_id].append({
                 "review": review.review,
                 "rating": review.rating,
-                "username": username
+                "username": email
             })
 
         # Retrieve all chapters and organize them by book id
@@ -140,18 +140,18 @@ class CombinedBookGenreListView(APIView):
             genres_data = BookGenreSerializer(genres, many=True).data
 
             # Fetch all users and map user_id to username
-            users = User.objects.all().values('id', 'username')
-            user_dict = {user['id']: user['username'] for user in users}
+            users = CustomUser.objects.all().values('id', 'email')
+            user_dict = {user['id']: user['email'] for user in users}
 
             # Retrieve reviews for the book and map user_id to username
             reviews = BookReview.objects.filter(book_id=book_id)
             reviews_data = []
             for review in reviews:
-                username = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
+                email = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
                 reviews_data.append({
                     "review": review.review,
                     "rating": review.rating,
-                    "username": username
+                    "username": email
                 })
 
             # Retrieve chapters for the book
@@ -187,8 +187,8 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
         books_data = BookSerializer(queryset, many=True).data
 
         # Fetch all users and map user_id to username
-        users = User.objects.all().values('id', 'username')
-        user_dict = {user['id']: user['username'] for user in users}
+        users = CustomUser.objects.all().values('id', 'email')
+        user_dict = {user['id']: user['email'] for user in users}
 
         # Combine book data with genres, reviews, and chapters
         combined_data = []
@@ -203,11 +203,11 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
             reviews = BookReview.objects.filter(book_id=book_id)
             reviews_data = []
             for review in reviews:
-                username = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
+                email = user_dict.get(review.user_id, "unknown")  # Get the username using user_dict
                 reviews_data.append({
                     "review": review.review,
                     "rating": review.rating,
-                    "username": username
+                    "username": email
                 })
             
             # Retrieve chapters for the found book

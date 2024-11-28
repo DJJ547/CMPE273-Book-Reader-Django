@@ -8,17 +8,6 @@ class CustomUser(AbstractUser):
     class Meta:
         unique_together = ('email', 'is_google')
 
-class User(models.Model):
-    id = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=45, null=False)
-    last_name = models.CharField(max_length=45, null=False)
-    username = models.CharField(max_length=45, null=False, unique=True)
-    password = models.CharField(max_length=45, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'users'
-
 
 class Book(models.Model):
     id = models.AutoField(primary_key=True)
@@ -72,7 +61,7 @@ class BookGenre(models.Model):
 
 class Shelf(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=45, null=False)
     icon = models.CharField(max_length=45, default='mood', null=False)
     background_color = models.CharField(
@@ -99,7 +88,7 @@ class ShelfBook(models.Model):
 class WishlistBook(models.Model):
     id = models.AutoField(primary_key=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True, null=False)
 
     class Meta:
@@ -110,7 +99,7 @@ class WishlistBook(models.Model):
 class BookReview(models.Model):
     id = models.AutoField(primary_key=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     review = models.CharField(max_length=500, null=False)
     rating = models.FloatField(null=False)
 
@@ -121,7 +110,7 @@ class BookReview(models.Model):
 class BookProgress(models.Model):
     id = models.AutoField(primary_key=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     current_chapter = models.IntegerField(default=0, null=False)
     last_read_at = models.DateTimeField(auto_now=True, null=False)
 
