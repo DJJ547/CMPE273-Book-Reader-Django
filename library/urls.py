@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_library_data_view, get_shelf_list_view, get_shelves_with_current_book_view, get_shelves_without_current_book_view, add_shelf_view, edit_shelf_view, remove_shelf_view, add_book_to_shelf_view, remove_book_from_shelf_view, add_book_to_wishlist_view, remove_book_from_wishlist_view, add_book_to_history_view, remove_book_from_history_view
+from .views import get_library_data_view, get_shelf_list_view, get_shelves_with_current_book_view, get_shelves_without_current_book_view, add_shelf_view, edit_shelf_view, remove_shelf_view, add_book_to_shelf_view, remove_book_from_shelf_view, add_book_to_wishlist_view, remove_book_from_wishlist_view, add_book_to_history_view, remove_book_from_history_view, get_current_book_history_view
 
 urlpatterns = [
     path('get_library_data/', get_library_data_view, name='get user library data'),
@@ -15,4 +15,5 @@ urlpatterns = [
     path('remove_book_from_wishlist/', remove_book_from_wishlist_view, name='remove a book from the wishlist'),
     path('add_book_to_history/', add_book_to_history_view, name='add a book to the history'),
     path('remove_book_from_history/', remove_book_from_history_view, name='remove a book from the history'),
+    path('get_current_book_history/', get_current_book_history_view, name='get current book history')
 ]

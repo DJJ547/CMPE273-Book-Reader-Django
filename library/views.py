@@ -1,4 +1,4 @@
-from .mysql import fetch_library_data, fetch_shelves_list_data, fetch_shelves_with_current_book, fetch_shelves_without_current_book, add_book_to_shelf, remove_book_from_shelf, add_shelf, edit_shelf, remove_shelf, add_book_to_wishlist, remove_book_from_wishlist, add_book_to_history, remove_book_from_history
+from .mysql import fetch_library_data, fetch_shelves_list_data, fetch_shelves_with_current_book, fetch_shelves_without_current_book, add_book_to_shelf, remove_book_from_shelf, add_shelf, edit_shelf, remove_shelf, add_book_to_wishlist, remove_book_from_wishlist, add_book_to_history, remove_book_from_history, fetch_current_book_history
 from rest_framework import status
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
@@ -25,6 +25,7 @@ def get_shelf_list_view(request):
     if not shelf_list['data']:
         return Response(shelf_list, status=status.HTTP_404_NOT_FOUND)
     return Response(shelf_list, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def get_shelves_with_current_book_view(request):
@@ -134,6 +135,16 @@ def remove_book_from_history_view(request):
     user_id = request.query_params.get('user_id', '')
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_history(user_id, book_id)
+    if not output['result']:
+        return Response(output, status=status.HTTP_404_NOT_FOUND)
+    return Response(output, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_current_book_history_view(request):
+    user_id = request.query_params.get('user_id', '')
+    book_id = request.query_params.get('book_id', '')
+    output = fetch_current_book_history(user_id, book_id)
     if not output['result']:
         return Response(output, status=status.HTTP_404_NOT_FOUND)
     return Response(output, status=status.HTTP_200_OK)

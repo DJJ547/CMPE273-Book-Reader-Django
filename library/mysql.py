@@ -420,14 +420,16 @@ def remove_shelf(user_id, shelf_id):
 def add_book_to_shelf(user_id, shelf_id, book_id):
     try:
         if ShelfBook.objects.filter(shelf_id=shelf_id, book_id=book_id).exists():
-            print(f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'.")
+            print(
+                f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'.")
             return {"result": False, "data": {}, "message": f"A book with the book id '{book_id}' from user with id '{user_id}' already exists in the shelf with id '{shelf_id}'."}
         else:
             new_book = ShelfBook.objects.create(
                 shelf_id=shelf_id, book_id=book_id)
             new_book.save()
             added_book = fetch_book_meta(user_id, shelf_id, book_id)
-            print(f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'.")
+            print(
+                f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'.")
             return {"result": True, "data": added_book, "message": f"Book with id '{book_id}' from user with id '{user_id}' successfully added to the shelf with id '{shelf_id}'."}
     except Exception as e:
         print(f"Exception: {e}")
@@ -437,13 +439,15 @@ def add_book_to_shelf(user_id, shelf_id, book_id):
 def remove_book_from_shelf(user_id, shelf_id, book_id):
     try:
         if not ShelfBook.objects.filter(shelf_id=shelf_id, book_id=book_id).exists():
-            print(f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'.")
+            print(
+                f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'.")
             return {"result": False, "message": f"The book with id '{book_id}' does not exist in the shelf with id '{shelf_id}'."}
         else:
             shelf_book = ShelfBook.objects.get(
                 shelf_id=shelf_id, book_id=book_id)
             shelf_book.delete()
-            print(f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'")
+            print(
+                f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'")
             return {"result": True, "message": f"The book with id '{book_id}' successfully removed from the shelf with id '{shelf_id}'"}
     except Exception as e:
         print(f"Exception: {e}")
@@ -508,3 +512,20 @@ def remove_book_from_history(user_id, book_id):
     except Exception as e:
         print(f"Exception: {e}")
         return {"result": False, "message": f"Error removing book from history: {e}"}
+
+
+def fetch_current_book_history(user_id, book_id):
+    try:
+        if not BookProgress.objects.filter(user_id=user_id, book_id=book_id).exists():
+            current_book_history_data = {
+                "book_id": book_id, "user_id": user_id, "current_chapter": 1}
+            return {"result": True, "data": current_book_history_data, "message": f"The book with id '{book_id}' from user with id '{user_id}' is currently at chapter id '{0}'."}
+        current_book_history = BookProgress.objects.get(
+            user_id=user_id, book_id=book_id)
+        current_book_history_data = {
+            "book_id": current_book_history.book_id, "user_id": current_book_history.user_id, "current_chapter": current_book_history.current_chapter
+        }
+        return {"result": True, "data": current_book_history_data, "message": f"The book with id '{book_id}' from user with id '{user_id}' is currently at chapter id '{current_book_history.current_chapter}'."}
+    except Exception as e:
+        print(f"Exception: {e}")
+        return {"result": False, "data": None, "message": f"An error occurred: {e}."}
