@@ -3,12 +3,10 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
-    google_id = models.CharField(
-        max_length=50, blank=True, null=True)  # Store Google ID
-#    profile_picture = models.URLField(null=True, blank=True)  # Store Google profile picture
-#    bookshelf = models.JSONField(default=list, blank=True)
-#    reading_history = models.JSONField(default=dict, blank=True)
+    is_google = models.BooleanField(null=False, default=False)
 
+    class Meta:
+        unique_together = ('email', 'is_google')
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)
