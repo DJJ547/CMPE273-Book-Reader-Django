@@ -14,7 +14,7 @@ def get_library_data_view(request):
     user_id = request.query_params.get('user_id', '')
     library_data = fetch_library_data(user_id)
     if not library_data['data']:
-        return Response(library_data, status=status.HTTP_404_NOT_FOUND)
+        return Response(library_data, status=status.HTTP_204_NO_CONTENT)
     return Response(library_data, status=status.HTTP_200_OK)
     
 
@@ -23,7 +23,7 @@ def get_shelf_list_view(request):
     user_id = request.query_params.get('user_id', '')
     shelf_list = fetch_shelves_list_data(user_id)
     if not shelf_list['data']:
-        return Response(shelf_list, status=status.HTTP_404_NOT_FOUND)
+        return Response(shelf_list, status=status.HTTP_204_NO_CONTENT)
     return Response(shelf_list, status=status.HTTP_200_OK)
 
 
@@ -33,7 +33,7 @@ def get_shelves_with_current_book_view(request):
     book_id = int(request.query_params.get('book_id', ''))
     shelf_list = fetch_shelves_with_current_book(user_id, book_id)
     if not shelf_list['data']:
-        return Response(shelf_list, status=status.HTTP_404_NOT_FOUND)
+        return Response(shelf_list, status=status.HTTP_204_NO_CONTENT)
     return Response(shelf_list, status=status.HTTP_200_OK)
 
 
@@ -43,7 +43,7 @@ def get_shelves_without_current_book_view(request):
     book_id = int(request.query_params.get('book_id', ''))
     shelf_list = fetch_shelves_without_current_book(user_id, book_id)
     if not shelf_list['data']:
-        return Response(shelf_list, status=status.HTTP_404_NOT_FOUND)
+        return Response(shelf_list, status=status.HTTP_204_NO_CONTENT)
     return Response(shelf_list, status=status.HTTP_200_OK)
 
 
@@ -53,7 +53,7 @@ def add_shelf_view(request):
     shelf = request.data.get('shelf', '')
     output = add_shelf(user_id, shelf)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -63,7 +63,7 @@ def edit_shelf_view(request):
     shelf = request.data.get('shelf', '')
     output = edit_shelf(user_id, shelf)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -73,7 +73,7 @@ def remove_shelf_view(request):
     shelf_id = request.query_params.get('shelf_id', '')
     output = remove_shelf(user_id, shelf_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -85,7 +85,7 @@ def add_book_to_shelf_view(request):
     print(f"add book to shelf request processed with user_id: {user_id}, shelf_id: {shelf_id}, book_id: {book_id}")
     output = add_book_to_shelf(user_id, shelf_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -96,7 +96,7 @@ def remove_book_from_shelf_view(request):
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_shelf(user_id, shelf_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -106,7 +106,7 @@ def add_book_to_wishlist_view(request):
     book_id = request.data.get('book_id', '')
     output = add_book_to_wishlist(user_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -116,7 +116,7 @@ def remove_book_from_wishlist_view(request):
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_wishlist(user_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -126,7 +126,7 @@ def add_book_to_history_view(request):
     book_id = request.data.get('book_id', '')
     output = add_book_to_history(user_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -136,7 +136,7 @@ def remove_book_from_history_view(request):
     book_id = request.query_params.get('book_id', '')
     output = remove_book_from_history(user_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_400_BAD_REQUEST)
     return Response(output, status=status.HTTP_200_OK)
 
 
@@ -146,5 +146,15 @@ def get_current_book_history_view(request):
     book_id = request.query_params.get('book_id', '')
     output = fetch_current_book_history(user_id, book_id)
     if not output['result']:
-        return Response(output, status=status.HTTP_404_NOT_FOUND)
+        return Response(output, status=status.HTTP_204_NO_CONTENT)
+    return Response(output, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def update_book_history_view(request):
+    user_id = request.query_params.get('user_id', '')
+    book_id = request.query_params.get('book_id', '')
+    output = fetch_current_book_history(user_id, book_id)
+    if not output['result']:
+        return Response(output, status=status.HTTP_204_NO_CONTENT)
     return Response(output, status=status.HTTP_200_OK)
