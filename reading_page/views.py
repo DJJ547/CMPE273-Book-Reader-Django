@@ -24,7 +24,7 @@ from .serializer import ChapterSerializer
 def getBook(request, book_name):
     mongo = MongoDBFunctions()
     chapters = mongo.getBook(book_name)
-    if len(chapters) > 0:
+    if chapters and len(chapters) > 0:
         serializer = ChapterSerializer(list(chapters), many=True)
         return Response(serializer.data)
     else:

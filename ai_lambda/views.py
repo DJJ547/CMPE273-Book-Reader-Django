@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import requests
-from .aws_sagemaker import invoke_sagemaker_chapter_summarization_endpoint, invoke_sagemaker_text_to_image_endpoint
+from .aws_sagemaker import invoke_sagemaker_chapter_summarization_endpoint, invoke_sagemaker_text_to_image_endpoint, summary_and_image
 import os
 from django.core.files.base import ContentFile
 import base64
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -29,9 +30,11 @@ def image_generation_view(request):
     if not prompt:
         return Response({"error": "No prompt provided"}, status=status.HTTP_400_BAD_REQUEST)
     try:
-        image_base64 = invoke_sagemaker_text_to_image_endpoint(prompt)
-        if not image_base64:
-            return Response({"error": "No image generated"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({"generated_image": image_base64}, status=status.HTTP_200_OK)
+        result = summary_and_image(prompt)
+        if not result:
+            print("No image or summary generated")
+            return Response({"error": "No image or summary generated"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print("generated")
+        return Response(result, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
