@@ -80,10 +80,10 @@ def fetch_library_data(user_id):
 
 def fetch_shelves_data(user_id):
     try:
-        shelves_data_map = {}
+        shelves_data_list = []
         shelves = Shelf.objects.filter(user_id=user_id)
         for shelf in shelves:
-            shelves_data_map[shelf.name] = {
+            shelf_data_obj = {
                 "id": shelf.id,
                 "name": shelf.name,
                 "icon": shelf.icon,
@@ -97,8 +97,9 @@ def fetch_shelves_data(user_id):
                 shelf_book_data = fetch_book_meta(
                     user_id, shelf.id, shelf_book.book_id)
                 shelf_books_data.append(shelf_book_data)
-            shelves_data_map[shelf.name]['books'] = shelf_books_data
-        return {"data": shelves_data_map, "message": f"Shelves data for user with id '{user_id}' successfully fetched."}
+            shelf_data_obj['books'] = shelf_books_data
+            shelves_data_list.append(shelf_data_obj)
+        return {"data": shelves_data_list, "message": f"Shelves data for user with id '{user_id}' successfully fetched."}
     except Exception as e:
         print(f"Exception: {e}")
         return {"data": {}, "message": f"An error occurred: {e}."}
