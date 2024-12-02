@@ -24,7 +24,7 @@ from .serializer import ChapterSerializer
 def getBook(request, book_name):
     mongo = MongoDBFunctions()
     chapters = mongo.getBook(book_name)
-    if chapters is not None and len(chapters) > 0:
+    if chapters and len(chapters) > 0:
         serializer = ChapterSerializer(list(chapters), many=True)
         return Response(serializer.data)
     else:
@@ -81,7 +81,7 @@ async def generate_audio(paragraphs, voice, max_retries=2):
 
                 # Calculate timing based on estimated WPM
                 words = len(paragraph.split())
-                average_wpm = 150  # Average words per minute
+                average_wpm = 160  # Average words per minute
                 paragraph_duration = (words / average_wpm) * 60 * 1000  # In milliseconds
 
                 timings.append({
