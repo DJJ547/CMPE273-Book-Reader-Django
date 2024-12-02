@@ -530,3 +530,27 @@ def fetch_current_book_history(user_id, book_id):
     except Exception as e:
         print(f"Exception: {e}")
         return {"result": False, "data": None, "message": f"An error occurred: {e}."}
+
+
+def update_last_read_chapter(user_id, book_name, chapter_id):
+    try:
+        if not Book.objects.filter(book_name=book_name).exists():
+            return {"result": True, "message": f"The book with name '{book_name}' from user with id '{user_id}' and chapter id '{chapter_id}' does not exist."}
+        current_book = Book.objects.get(book_name=book_name)
+        book_id = current_book.id
+        if not BookProgress.objects.filter(user_id=user_id, book_id=book_id).exists():
+            new_progress = BookProgress(
+                book_id=book_id, user_id=user_id, current_chapter=chapter_id)
+            new_progress.save()
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' is currently at chapter id '{chapter_id}'."}
+        current_progress = BookProgress.objects.get(
+            user_id=user_id, book_id=book_id)
+        if chapter_id > current_progress.current_chapter:
+            current_progress.current_chapter = chapter_id
+            current_progress.save()
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' is currently at chapter id '{chapter_id}'."}
+        else:
+            return {"result": True, "message": f"The book with id '{book_id}' from user with id '{user_id}' is currently at chapter id '{current_progress.current_chapter}'."}
+    except Exception as e:
+        print(f"Exception: {e}")
+        return {"result": False, "message": f"An error occurred: {e}."}
