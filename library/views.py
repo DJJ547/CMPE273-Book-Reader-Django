@@ -91,7 +91,7 @@ def add_book_to_shelf_view(request):
 @api_view(['DELETE'])
 def remove_book_from_shelf_view(request):
     user_id = int(request.query_params.get('user_id', ''))
-    shelf_id = int(equest.query_params.get('shelf_id', ''))
+    shelf_id = int(request.query_params.get('shelf_id', ''))
     book_id = int(request.query_params.get('book_id', ''))
     output = remove_book_from_shelf(user_id, shelf_id, book_id)
     if not output['result']:
