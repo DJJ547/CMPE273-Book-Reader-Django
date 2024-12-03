@@ -154,6 +154,7 @@ def update_book_history_view(request):
     user_id = int(request.data.get('user_id', ''))
     book_name = request.data.get('book_name', '')
     chapter_id = int(request.data.get('chapter_id', ''))
+
     output = update_last_read_chapter(user_id, book_name, chapter_id)
     if not output['result']:
         return Response(output, status=status.HTTP_204_NO_CONTENT)
