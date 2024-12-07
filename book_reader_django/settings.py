@@ -18,10 +18,6 @@ import os
 
 load_dotenv()
 
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID_CHAP_SUM')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY_CHAP_SUM')
-AWS_REGION_NAME = os.getenv('AWS_DEFAULT_REGION')
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,6 +48,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = os.getenv(
 
 # If using React or another frontend on localhost
 CORS_ALLOWED_ORIGINS = [
+    os.getenv('FRONTEND'),
     'http://localhost:3000',
 ]
 
@@ -78,9 +75,9 @@ CORS_ALLOW_HEADERS = [
 SECRET_KEY = 'django-insecure-d!006s+rsm)cb27g1ogr)@0owu!*5bq5r8io8i#v@zze(tzy=x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
