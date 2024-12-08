@@ -52,6 +52,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
 
+
 # If you need to allow specific HTTP methods
 CORS_ALLOW_METHODS = [
     "GET",
@@ -63,13 +64,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 # Allow specific headers (optional)
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "x-csrftoken",
-    # Add any other custom headers you need
-    'X-Paragraph-Timings'
-]
+CORS_ALLOW_HEADERS = ['*']
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-d!006s+rsm)cb27g1ogr)@0owu!*5bq5r8io8i#v@zze(tzy=x'
@@ -77,7 +72,7 @@ SECRET_KEY = 'django-insecure-d!006s+rsm)cb27g1ogr)@0owu!*5bq5r8io8i#v@zze(tzy=x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -173,6 +168,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'book_reader_django.wsgi.application'
+ASGI_APPLICATION = "your_project_name.asgi.application"
 
 # AWS RDS MySQL DB and Amazon Document DB settings
 

@@ -1,0 +1,23 @@
+version: '3.11-slim'
+
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "8000:8000"  # Expose port 8000 for Django
+    image: 833612282618.dkr.ecr.us-west-1.amazonaws.com/web:latest
+    volumes:
+      - .:/app        # Mount the project directory
+    depends_on:
+      - redis         # Ensure Redis starts before Django
+
+  redis:
+    image: redis:6.2  # Use the official Redis image
+    ports:
+      - "6379:6379"   # Expose Redis port 6379
+    volumes:
+      - redis_data:/data  # Persist Redis data
+
+volumes:
+  redis_data:

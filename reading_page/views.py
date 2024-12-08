@@ -44,6 +44,7 @@ def getTableOfContents(request, book_name):
     mongo = MongoDBFunctions()
     chapters = mongo.getTableOfContents(book_name)
     if chapters:
+        print('returning chapters of table of contents')
         return Response(chapters)
     else:
         return HttpResponse('Book not found', status=404)
@@ -133,7 +134,7 @@ def tts_stream(request):
 
     if not paragraphs:
         return JsonResponse({"error": "No paragraphs provided"}, status=400)
-
+    print("Generating audio")
     # Generate a unique cache key based on the input
     cache_key = hashlib.sha256(json.dumps({"paragraphs": paragraphs, "voice": voice}).encode()).hexdigest()
 
@@ -147,6 +148,7 @@ def tts_stream(request):
         response["Content-Disposition"] = 'inline; filename="audio.mp3"'
         response["X-Paragraph-Timings"] = json.dumps(cached_timings)
         response['Access-Control-Expose-Headers'] = 'X-Paragraph-Timings'
+        print("Returning cached audio")
         return response
 
     # Generate audio and timings for the paragraphs
@@ -174,7 +176,7 @@ def tts_stream(request):
     response["Content-Disposition"] = 'inline; filename="audio.mp3"'
     response["X-Paragraph-Timings"] = json.dumps(combined_timings)
     response['Access-Control-Expose-Headers'] = 'X-Paragraph-Timings'
-
+    print("Returning generated audio")
     return response
 
 

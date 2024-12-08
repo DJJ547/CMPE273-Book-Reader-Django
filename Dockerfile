@@ -8,6 +8,14 @@ ENV PYTHONUNBUFFERED 1
 # Set working directory inside the container
 WORKDIR /app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && apt-get clean
+
 # Copy the requirements file
 COPY requirements.txt /app/
 
@@ -21,4 +29,4 @@ COPY . /app/
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "book_reader_django.wsgi:application"]
+CMD ["uvicorn", "book_reader_django.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
