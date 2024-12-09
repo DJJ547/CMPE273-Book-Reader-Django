@@ -13,10 +13,14 @@ load_dotenv()
 
 def numpy_array_to_base64(image_array):
     """Convert a NumPy array to a base64-encoded string."""
-    image = Image.fromarray(image_array)
-    buffered = io.BytesIO()
-    image.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode('utf-8')
+    try:
+        image = Image.fromarray(image_array.astype('uint8'))  # Ensure the array is of type uint8
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")
+        return base64.b64encode(buffered.getvalue()).decode('utf-8')
+    except Exception as e:
+        print(f"Error converting image array to base64: {e}")
+        return None
 
 def base64_to_numpy_array(base64_str):
     """Convert a base64-encoded string to a NumPy array."""
@@ -71,10 +75,9 @@ def invoke_sagemaker_text_to_image_endpoint(input_prompt):
         # Assuming the model returns an image array
         result = json.loads(response['Body'].read().decode('utf-8'))
         image_array = np.array(result.get("generated_image", []))
-        
         # Convert the image array to a base64-encoded string
         image_base64 = numpy_array_to_base64(image_array)
-        
+        print("Image base64 generated.")
         # Store the result in the cache with a timeout of 1 hour
         cache.set(cache_key, {"image_base64": image_base64}, timeout=3600)
         
