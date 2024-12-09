@@ -49,6 +49,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = os.getenv(
 # If using React or another frontend on localhost
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND'),
+    os.getenv('FRONTEND2'),
     'http://localhost:3000',
     'http://localhost:8000',
 ]
