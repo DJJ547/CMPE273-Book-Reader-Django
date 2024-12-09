@@ -236,9 +236,33 @@ class CombinedBookGenreListViewSearch(generics.ListAPIView):
 
 class BookReviewCreateView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = BookReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            # Save the new review to the database
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            book_id = int(request.data.get('book_id'))
+            user_id = int(request.data.get('user_id'))
+            review = request.data.get('review', '')
+            rating = request.data.get('rating', '')
+            new_review = BookReview.objects.create(
+                book_id=book_id,
+                user_id=user_id,
+                review=review,
+                rating=rating
+            )
+            new_review.save()
+            new_review_data = {
+                "book_id":new_review.book_id,
+                "user_id":new_review.user_id,
+                "review":new_review.review,
+                "rating":new_review.rating
+            }
+            return Response(new_review_data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(f"Exception: {e}")
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)
+        # print(request.data)
+        # serializer = BookReviewSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     print("saved")
+        #     # Save the new review to the database
+        #     serializer.save()
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
