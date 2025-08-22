@@ -95,29 +95,20 @@ Watch the demo here:
 [![Watch Demo](https://img.shields.io/badge/Google%20Drive-Demo-blue?logo=google-drive)](https://drive.google.com/file/d/14FKU8VqZIHQvHOYBXDzuwVMzam-QA_Y7/view?usp=drive_link)
 
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
-### High-Level Architecture
+![System Architecture](./readme/architecture.png)
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend       │    │   AI Services   │
-│   (React)       │◄──►│   (Django)      │◄──►│   (SageMaker)   │
-│                 │    │                 │    │                 │
-│ • S3 + CloudFront│   │ • ECS + ALB     │    │ • TTS Models    │
-│ • IndexedDB     │   │ • Redis Cache   │    │ • TTI Models    │
-│ • Local Storage │   │ • RDS (MySQL)   │    │ • NLP Models    │
-└─────────────────┘    │ • MongoDB       │    └─────────────────┘
-                       └─────────────────┘
-```
+*(High-level architecture of the system)*
 
-### Data Flow
+---
 
-1. **User Authentication**: Frontend authenticates via Django backend
-2. **Content Retrieval**: Backend fetches books from multiple sources
-3. **AI Processing**: SageMaker endpoints handle TTS, TTI, and summarization
-4. **Caching**: Redis (server-side) and IndexedDB (client-side) optimize performance
-5. **Storage**: MySQL stores metadata, MongoDB stores content, S3 stores media
+## 🔄 Data Flow
+
+![Data Flow](./readme/dataflow.png)
+
+*(End-to-end data flow from input sources to analytics and output)*
+
 
 ## 🛠️ Technology Stack
 
