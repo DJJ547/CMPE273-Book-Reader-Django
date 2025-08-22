@@ -62,6 +62,39 @@ The AI-Powered Book Reader is a cutting-edge application designed to bridge the 
 - **Offline Support**: Client-side caching for uninterrupted reading
 - **Accessibility Features**: High contrast modes, adjustable text sizes, and screen reader support
 
+## 📸 Demo Images
+
+Here are some screenshots of the application:
+
+### **Main Page**
+![Main Page](./readme/main.png)
+
+### **Single Book Search**
+![Book Search](./readme/book.png)
+
+### **Review Page**
+![Review Page](./readme/review.png)
+
+### **Library Page**
+![Library Page](./readme/library.png)
+
+### **Reading Page – Text to Speech**
+![Text to Speech](./readme/tts.png)
+
+### **Reading Page – Text to Image**
+![Text to Image](./readme/tti.png)
+
+### **Reading Page – Customization**
+![Customization](./readme/custom.png)
+
+---
+
+## 🎥 Demo Video
+
+Watch the demo here:  
+[![Watch Demo](https://img.shields.io/badge/Google%20Drive-Demo-blue?logo=google-drive)](https://drive.google.com/file/d/14FKU8VqZIHQvHOYBXDzuwVMzam-QA_Y7/view?usp=drive_link)
+
+
 ## 🏗️ Architecture
 
 ### High-Level Architecture
